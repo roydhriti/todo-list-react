@@ -5,73 +5,127 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Keyboard,
+  FlatList,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
 
-const Task = ({ text, onDelete }) => {
+const Task = ({ task, onDelete, onComplete }) => {
   return (
     <View style={styles.item}>
       <View style={styles.itemLeft}>
-        <View style={styles.square}></View>
-        <Text style={styles.itemText}>{text}</Text>
+        <View
+          style={[styles.square, task.completed && styles.completedSquare]}
+        ></View>
+        <View>
+          <Text
+            style={[styles.itemText, task.completed && styles.completedText]}
+          >
+            {task.title}
+          </Text>
+          <Text style={styles.description}>{task.description}</Text>
+          <Text style={styles.details}>
+            Due: {task.deadline} | Priority: {task.priority}
+          </Text>
+        </View>
       </View>
-      <TouchableOpacity style={styles.circular} onPress={onDelete}>
-        <Text style={styles.text}>Del</Text>
-      </TouchableOpacity>
+      <View style={styles.actions}>
+        <TouchableOpacity onPress={onComplete}>
+          <Text style={styles.completeText}>
+            {task.completed ? "Undo" : "Complete"}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onDelete}>
+          <Text style={styles.deleteText}>Delete</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const Tasks = () => {
-  const [task, setTask] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [priority, setPriority] = useState("");
   const [taskItems, setTaskItems] = useState([]);
 
   const handleAddTask = () => {
-    if (task) {
-      setTaskItems([...taskItems, task]);
-      setTask("");
-      Keyboard.dismiss();
+    if (title && description && deadline && priority) {
+      const newTask = {
+        title,
+        description,
+        deadline,
+        priority,
+        completed: false,
+      };
+      setTaskItems([...taskItems, newTask]);
+      setTitle("");
+      setDescription("");
+      setDeadline("");
+      setPriority("");
     }
   };
 
   const completeTask = (index) => {
-    let itemsCopy = [...taskItems];
-    itemsCopy.splice(index, 1);
-    setTaskItems(itemsCopy);
+    const updatedTasks = [...taskItems];
+    updatedTasks[index].completed = !updatedTasks[index].completed;
+    setTaskItems(updatedTasks);
+  };
+
+  const deleteTask = (index) => {
+    const updatedTasks = [...taskItems];
+    updatedTasks.splice(index, 1);
+    setTaskItems(updatedTasks);
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
-        <Text style={styles.sectionTitle}>Today's Tasks</Text>
+        <Text style={styles.sectionTitle}>Tasks</Text>
       </View>
 
-      <View style={styles.items}>
-        {taskItems.map((item, index) => {
-          return (
-            <Task
-              key={index}
-              text={item}
-              onDelete={() => completeTask(index)}
-            />
-          );
-        })}
-      </View>
+      <FlatList
+        data={taskItems}
+        renderItem={({ item, index }) => (
+          <Task
+            task={item}
+            onComplete={() => completeTask(index)}
+            onDelete={() => deleteTask(index)}
+          />
+        )}
+        keyExtractor={(item, index) => index.toString()}
+        style={styles.items}
+      />
 
-      {/* Write a task */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "android" ? "padding" : "height"}
         style={styles.writeTaskWrapper}
       >
         <TextInput
           style={styles.input}
-          placeholder="Write your task"
-          value={task}
-          onChangeText={(text) => setTask(text)}
+          placeholder="Title"
+          value={title}
+          onChangeText={(text) => setTitle(text)}
         />
-
+        <TextInput
+          style={styles.input}
+          placeholder="Description"
+          value={description}
+          onChangeText={(text) => setDescription(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Deadline (e.g. 2025-01-30)"
+          value={deadline}
+          onChangeText={(text) => setDeadline(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Priority (High, Medium, Low)"
+          value={priority}
+          onChangeText={(text) => setPriority(text)}
+        />
         <TouchableOpacity onPress={handleAddTask}>
           <View style={styles.buttonWrapper}>
             <Text style={styles.buttonText}>+</Text>
@@ -102,9 +156,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     marginBottom: 10,
   },
   itemLeft: {
@@ -119,51 +170,61 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 15,
   },
+  completedSquare: {
+    backgroundColor: "#4CAF50",
+  },
   itemText: {
-    maxWidth: "70%",
+    fontSize: 18,
+    fontWeight: "bold",
   },
-  circular: {
-    width: 25,
-    height: 25,
-    borderColor: "#558CF6",
-    borderWidth: 2,
-    borderRadius: 5,
-    justifyContent: "center",
-    alignContent: "center",
+  completedText: {
+    textDecorationLine: "line-through",
+    color: "#808080",
   },
-  text: {
-    fontSize: 10,
+  description: {
+    fontSize: 14,
+    color: "#555",
+  },
+  details: {
+    fontSize: 12,
+    color: "#999",
+  },
+  actions: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  completeText: {
+    marginRight: 10,
+    color: "#4CAF50",
+  },
+  deleteText: {
     color: "#FF0000",
-    marginLeft: 2,
   },
   writeTaskWrapper: {
     position: "absolute",
     bottom: 60,
     width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
+    paddingHorizontal: 15,
   },
   input: {
-    paddingVertical: 15,
-    paddingHorizontal: 15,
+    padding: 10,
     backgroundColor: "#fff",
-    borderRadius: 60,
-    borderColor: "#C0C0C0",
+    borderRadius: 10,
+    marginBottom: 10,
     borderWidth: 1,
-    width: 250,
+    borderColor: "#C0C0C0",
   },
   buttonWrapper: {
+    backgroundColor: "#4CAF50",
+    borderRadius: 50,
     width: 60,
     height: 60,
-    backgroundColor: "#fff",
-    borderRadius: 60,
     justifyContent: "center",
     alignItems: "center",
-    borderColor: "#C0C0C0",
-    borderWidth: 1,
+    alignSelf: "center",
   },
   buttonText: {
+    color: "#fff",
     fontSize: 24,
     fontWeight: "bold",
   },

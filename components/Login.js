@@ -93,59 +93,59 @@ const Login = ({ navigation, userData }) => {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    padding: 4,
+    flex: 1, // Takes full height of the screen
     backgroundColor: "#fff",
-    height: "100%",
-    width: "100%",
     justifyContent: "center",
-    flexDirection: "column",
+    paddingHorizontal: 20,
   },
   headerContainer: {
-    textAlign: "left",
-    marginHorizontal: 20,
+    marginBottom: 40,
   },
   headerText: {
-    fontSize: 40,
+    fontSize: 36,
     fontWeight: "bold",
+    color: "#2C3E50",
+    textAlign: "center",
   },
   inputContainer: {
-    height: "20%",
-    justifyContent: "center",
-    marginVertical: 10,
+    marginBottom: 30,
   },
   inputSection: {
-    marginHorizontal: 20,
+    marginBottom: 20,
   },
   inputLabels: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "500",
-    paddingLeft: 8,
-    paddingVertical: 5,
+    color: "#34495E",
+    paddingBottom: 8,
   },
   inputText: {
-    fontSize: 20,
-    backgroundColor: "#c5c6c9",
-    borderRadius: 15,
-    paddingLeft: 10,
+    fontSize: 16,
+    backgroundColor: "#ECF0F1",
+    borderRadius: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#BDC3C7",
+    color: "#2C3E50",
   },
-
   buttonSection: {
+    flexDirection: "row",
     justifyContent: "space-between",
   },
   buttonContainer: {
+    flex: 1, // Buttons take equal space
     backgroundColor: "#4861cf",
     height: 50,
-    // width: "60%",
-    // alignItems: "center",
-    // justifyContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 10,
-    padding: 1,
-    // marginHorizontal: 20,
-    // marginVertical: 10,
+    marginHorizontal: 5,
   },
   buttonText: {
-    fontSize: 25,
+    fontSize: 18,
+    fontWeight: "bold",
     color: "white",
+    textAlign: "center",
   },
 });
 
